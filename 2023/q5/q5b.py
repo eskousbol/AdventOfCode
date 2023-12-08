@@ -63,6 +63,7 @@ def main():
 
     for value_range in old_values:
       for num in value_range:
+        # Where was the zero coming from. I do not know.
         if num < lowest_location and num != 0:
           lowest_location = num
 
