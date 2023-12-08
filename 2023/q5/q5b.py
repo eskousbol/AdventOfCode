@@ -1,6 +1,21 @@
 import re
 from datetime import datetime
 
+class SeedRange:
+  def __init__(self, range):
+    self.range = range
+    self.mapping = range
+    self.mapped = False
+  
+  def __str__(self):
+    return f"Seeds {self.range} maps to {self.mapping}"
+
+  def map(self, destination, source, range):
+
+    if not self.mapped and self.mapping >= source and self.mapping < (source + range):
+      self.mapping = self.mapping - source + destination
+      self.mapped = True
+
 def merge_ranges(value1, value2):
   a = max(value1[0], value2[0])
   b = min(value1[1], value2[1])
@@ -17,26 +32,51 @@ def merge_ranges(value1, value2):
 def merge_values(values):
   if len(values) ==1:
     return values
+
+  sorted_values = []
+  for i in range(len(values)):
+    place = 0
+    if len(sorted_values) == 0:
+      sorted_values.append(values[i]) 
+    else:
+      for j in range(len(sorted_values)):
+        if values[i][0] > sorted_values[j][0]:
+          print('inc')
+          place += 1
+        else:
+          break
+      sorted_values.insert(place, values[i])
+
+  merged_indices = []
   merged_values = []
   merge_occured = True
   while merge_occured:
     merge_occured = False
-    for value1 in values:
-      for value2 in values:
-        if value1 != value2:
-          merged = merge_ranges(value1, value2)
-          print(value1, value2, merged)
-          print(merged)
-          if len(merged) == 1:
-            merge_occured = True
-          for item in merged:
-            print('hi')
-            if item not in merged_values:
-              merged_values.append(item)
-    if len(values) == len(merged_values):
+    merged = []
+    for i in range(len(sorted_values)):
+      for j in range(len(sorted_values)):
+        print(merged)
+        print(sorted_values)
+        if j <= i or i in merged_indices or j in merged_indices:
+          continue
+        value1 = sorted_values[i]
+        value2 = sorted_values[j]
+        merged = merge_ranges(value1, value2)
+        print(value1, value2, merged)
+        if len(merged) == 1:
+          merged_indices.append(i)
+          merged_indices.append(j)
+          merge_occured = True
+        for item in merged:
+          if item not in merged_values:
+            merged_values.append(item)
+        
+    if len(sorted_values) == len(merged_values):
       merge_occured = False
-    values = merged_values
+    sorted_values = merged_values
     print(merged_values)
+  
+
   return merged_values
 
 def main():
@@ -79,6 +119,8 @@ def main():
         print('-----------------------------')
         print(mapping)
 
+        unmapped_values = []
+
         for old_value in old_values:
           a = max(mapping[0], old_value[0])
           b = min(mapping[1], old_value[1])
@@ -96,14 +138,16 @@ def main():
               values.append([old_value[0], a])
             if b < old_value[1] and [b, old_value[1]] not in values:
               values.append([b, old_value[1]])
-      
-      breaks = []
-      if len(values) == 2:
-        values = merge_ranges(values[0], values[1])
-
+      print('BEFORE')
+      print(values)
+      print('-----------------------')
       values = merge_values(values)
+      print('AFTER')
+      print(values)
       old_values = values
       values = []
 
+  print('END')
+  print(old_values)
 
 main()
