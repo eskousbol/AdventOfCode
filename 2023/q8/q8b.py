@@ -1,16 +1,19 @@
 import re
+import math
 
-def all_end_nodes(nodes):
-  for node in nodes:
-    if node[2] != 'Z':
-      return False
-  return True
+def lcm(a, b):
+  return abs(a*b) // math.gcd(a, b)
+
+def lcm_multiples(numbers):
+  multiple = numbers[0]
+  for number in numbers[1:]:
+    multiple = lcm(multiple, number)
+  return multiple
 
 def main():
   f = open("./q8_input.txt", "r")
 
   directions = list(f.readline().strip())
-  print(directions)
   f.readline()
 
   elements = {}
@@ -23,21 +26,16 @@ def main():
     if node[2] == 'A':
       nodes.append(node)
 
-  steps = 0
-  iter = 0
-  while not all_end_nodes(nodes):
-    if iter == len(directions):
-      iter = 0
-    direction = 0 if directions[iter] == 'L' else 1
-    new_nodes = []
-    for i in range(len(nodes)):
-      new_nodes.append(elements[nodes[i]][direction])
-    steps += 1
-    iter += 1
-    nodes = new_nodes
-    if steps % 10000 == 0:
-      print(nodes)
-  print(steps)
-  
+  iters = []
+  for i in range(len(nodes)):
+    node = nodes[i]
+    steps = 0
+    while node[2] != 'Z':
+      direction = 0 if directions[steps % len(directions)] == 'L' else 1
+      node = elements[node][direction]
+      steps += 1
+    iters.append(steps)
+
+  print(lcm_multiples(iters))
 
 main()
