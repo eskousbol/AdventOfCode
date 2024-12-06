@@ -12,27 +12,29 @@ def is_sorted(rules, order):
   return is_valid
 
 def sort_row(rules, order):
-  sorted_row = order[::]
-  while not is_sorted(rules, sorted_row):
+  sorted = False
+  while not sorted:
     before_pages = set()
+    sorted = True
     for i in range(len(order)):
-      page = sorted_row[i]
+      page = order[i]
       if page in rules.keys():
         intersection = before_pages.intersection(rules[page])
         if len(intersection) > 0:
-          lowest_index = len(sorted_row)
-          offending_value = 0
+          sorted = False
+          lowest_index = len(order)
+          offending_value = None
           while len(intersection) > 0:
             value = intersection.pop()
-            index = sorted_row.index(value)
+            index = order.index(value)
             if index < lowest_index:
               lowest_index = index
               offending_value = value
-          page_index = sorted_row.index(page)
-          sorted_row[page_index] = offending_value
-          sorted_row[lowest_index] = page
+          page_index = order.index(page)
+          order[page_index] = offending_value
+          order[lowest_index] = page
       before_pages.add(page)
-  return sorted_row
+  return order
 
 def main():
   f = open("./q5_input.txt", "r")
